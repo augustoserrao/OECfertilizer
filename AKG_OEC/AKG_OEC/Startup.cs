@@ -29,6 +29,11 @@ namespace AKG_OEC
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            // enable dependency injection for context of OEC database
+            services.AddDbContext<OECContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("OECConnection")));
+
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -59,6 +64,14 @@ namespace AKG_OEC
 
             app.UseMvc(routes =>
             {
+                /* DO - CHANGE THIS!!!!!
+                 
+                routes.MapRoute(
+                    name: "AlbumStart",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+                 
+                 */
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

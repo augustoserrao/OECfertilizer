@@ -1,6 +1,24 @@
 ﻿body {
-    padding-top: 50px;
+    padding-top: 50px; /*to put page past menubar*/
     padding-bottom: 20px;
+    height: auto;
+    width: auto;
+    margin: 1em auto;
+    background-color: #222;
+    color: antiquewhite;
+}
+
+footer ul {
+    float: right;
+    list-style-type: none;
+    left: 0;
+    right: 0;
+}
+
+footer ul li {
+    display: inline;
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 /* Wrapping element */

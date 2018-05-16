@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <UserSecretsId>aspnet-AKG_OEC-3F196243-4806-43DC-B256-9095599AC646</UserSecretsId>
+    <UserSecretsId>aspnet-AKG_OEC-5FA3EBBD-49E7-406E-AFA6-02F5F71FAB9A</UserSecretsId>
   </PropertyGroup>
 
 
@@ -16,6 +16,10 @@
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.3" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images\cow_icon.jpg" />
   </ItemGroup>
 
 </Project>

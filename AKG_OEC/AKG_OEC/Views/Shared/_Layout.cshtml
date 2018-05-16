@@ -20,19 +20,19 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
+                <img src="/images/cow_icon.jpg" alt="Cow Image" height="50" style="left: 0; right: 0; float: left; padding-right: 10px;" />
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">AKG_OEC</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand" style="color: yellow;">OEC Fertilizers</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="AKG_Crops" asp-action="Index">Crops</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -42,7 +42,12 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - AKG_OEC</p>
+            <p style="text-align: justify; float: left;">&copy; 2018 - <a href="mailto:Amoyaserrao8455@conestogac.on.ca">Augusto Serrao</a> - <a href="mailto:Krathnayake6843@conestogac.on.ca">Kamal Rathnayake</a> - <a href="mailto:gmuruganandam4348@conestogac.on.ca">Goudamaraja Muruganandan</a> </p>
+
+            <ul>
+                <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+            </ul>
         </footer>
     </div>
 
