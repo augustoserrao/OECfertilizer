@@ -138,6 +138,11 @@ namespace AKG_OEC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var varieties = _context.Variety.Where(m => m.CropId == id)
+                                          .Select(m => new { m.VarietyId }); ;
+            foreach (var variety in varieties)
+                _context.Variety.Remove(await _context.Variety.SingleOrDefaultAsync(m => m.VarietyId == variety.VarietyId));
+
             var crop = await _context.Crop.SingleOrDefaultAsync(m => m.CropId == id);
             _context.Crop.Remove(crop);
             await _context.SaveChangesAsync();
