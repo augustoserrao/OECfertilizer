@@ -19,6 +19,7 @@ namespace AKG_OEC.Controllers
         }
 
         // GET: AKG_Crops
+        // This action shows index view
         public async Task<IActionResult> Index()
         {
             return View(await _context.Crop.ToListAsync());
@@ -138,11 +139,13 @@ namespace AKG_OEC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Deleting from Variety table because of foreign key constraints
             var varieties = _context.Variety.Where(m => m.CropId == id)
                                           .Select(m => new { m.VarietyId }); ;
             foreach (var variety in varieties)
                 _context.Variety.Remove(await _context.Variety.SingleOrDefaultAsync(m => m.VarietyId == variety.VarietyId));
 
+            // Deleting from Crop table
             var crop = await _context.Crop.SingleOrDefaultAsync(m => m.CropId == id);
             _context.Crop.Remove(crop);
             await _context.SaveChangesAsync();
