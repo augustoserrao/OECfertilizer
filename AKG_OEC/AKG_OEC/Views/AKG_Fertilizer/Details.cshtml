@@ -10,6 +10,14 @@
     <h4>Fertilizer</h4>
     <hr />
     <dl class="dl-horizontal">
+
+        <dt>
+            <label asp-for="FertilizerName" class="control-label"></label>
+        </dt>
+        <dd>
+            <input asp-for="FertilizerName" class="form-control" readonly  style="width:400px"/>
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.Oecproduct)
         </dt>
