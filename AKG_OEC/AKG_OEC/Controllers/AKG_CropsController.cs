@@ -22,7 +22,7 @@ namespace AKG_OEC.Controllers
         // This action shows index view
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Crop.ToListAsync());
+            return View((await _context.Crop.ToListAsync()).OrderBy(m => m.Name));
         }
 
         // GET: AKG_Crops/Details/5
