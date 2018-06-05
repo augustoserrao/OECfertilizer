@@ -1,1 +1,0 @@
-﻿Data Source=LAPTOP-K13PHGH3\SQLEXPRESS;Initial Catalog=OEC;Integrated Security=True
