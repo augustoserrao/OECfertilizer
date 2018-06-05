@@ -42,6 +42,10 @@ namespace AKG_OEC
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddMvc();
+
+            // add support for Session variables
+            services.AddDistributedMemoryCache();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,6 +80,9 @@ namespace AKG_OEC
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            // Initialise Sesssion:
+            app.UseSession();
         }
     }
 }
