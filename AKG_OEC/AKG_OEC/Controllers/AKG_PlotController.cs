@@ -50,7 +50,7 @@ namespace AKG_OEC.Controllers
             else if (varietyId != null)
             {
                 ResetCookies();
-                Response.Cookies.Append("varietyId", cropId.ToString());
+                Response.Cookies.Append("varietyId", varietyId.ToString());
                 Response.Cookies.Append("varietyName", varietyName);
                 ViewBag.varietyName = varietyName;
 
@@ -192,10 +192,12 @@ namespace AKG_OEC.Controllers
             if (Request.Cookies["cropId"] != null)
             {
                 ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.CropId == Convert.ToInt32(Request.Cookies["cropId"])).OrderBy(p => p.Name), "VarietyId", "Name");
+                ViewBag.cropName = Request.Cookies["cropName"];
             }
             else if (Request.Cookies["varietyId"] != null)
             {
                 ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])).OrderBy(p => p.Name), "VarietyId", "Name");
+                ViewBag.varietyName = Request.Cookies["varietyName"];
             }
             else
             {
@@ -242,10 +244,12 @@ namespace AKG_OEC.Controllers
             if (Request.Cookies["cropId"] != null)
             {
                 ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.CropId == Convert.ToInt32(Request.Cookies["cropId"])).OrderBy(p => p.Name), "VarietyId", "Name", plot.VarietyId);
+                ViewBag.cropName = Request.Cookies["cropName"];
             }
             else if (Request.Cookies["varietyId"] != null)
             {
                 ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])).OrderBy(p => p.Name), "VarietyId", "Name", plot.VarietyId);
+                ViewBag.varietyName = Request.Cookies["varietyName"];
             }
             else
             {
@@ -309,6 +313,15 @@ namespace AKG_OEC.Controllers
                 return NotFound();
             }
 
+            if (Request.Cookies["cropId"] != null)
+            {
+                ViewBag.cropName = Request.Cookies["cropName"];
+            }
+            else if (Request.Cookies["varietyId"] != null)
+            {
+                ViewBag.varietyName = Request.Cookies["varietyName"];
+            }
+
             return View(plot);
         }
 
@@ -317,7 +330,7 @@ namespace AKG_OEC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            // Deleting from Variety table because of foreign key constraints
+            // Deleting from other tables because of foreign key constraints
             var treatments = _context.Treatment.Where(m => m.PlotId == id)
                                           .Select(m => new { m.TreatmentId });
 

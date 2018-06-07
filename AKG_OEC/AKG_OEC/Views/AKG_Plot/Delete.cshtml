@@ -4,7 +4,18 @@
     ViewData["Title"] = "Delete Plot";
 }
 
-<h2>Delete Plot</h2>
+@if (ViewBag.cropName != null)
+{
+    <h2>Delete Plot for @ViewBag.cropName Crop</h2>
+}
+else if (ViewBag.varietyName != null)
+{
+    <h2>Delete Plot for @ViewBag.varietyName Variety</h2>
+}
+else
+{
+    <h2>Delete Plot</h2>
+}
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -138,7 +149,7 @@
             @Html.DisplayFor(model => model.Variety.VarietyId)
         </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="PlotId" />
         <input type="submit" value="Delete" class="btn btn-default" /> |

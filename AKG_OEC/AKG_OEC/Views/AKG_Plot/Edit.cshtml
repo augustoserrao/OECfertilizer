@@ -4,7 +4,18 @@
     ViewData["Title"] = "Edit Plot";
 }
 
-<h2>Edit Plot</h2>
+@if (ViewBag.cropName != null)
+{
+    <h2>Edit Plot for @ViewBag.cropName Crop</h2>
+}
+else if (ViewBag.varietyName != null)
+{
+    <h2>Edit Plot for @ViewBag.varietyName Variety</h2>
+}
+else
+{
+    <h2>Edit Plot</h2>
+}
 
 <h4>Plot</h4>
 <hr />

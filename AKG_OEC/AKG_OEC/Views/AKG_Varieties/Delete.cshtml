@@ -1,10 +1,17 @@
 ﻿@model AKG_OEC.Models.Variety
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Variety";
 }
 
-<h2>Delete</h2>
+@if (ViewBag.cropName != null)
+{
+    <h2>Delete Variety for @ViewBag.cropName Crop</h2>
+}
+else
+{
+    <h2>Delete Variety</h2>
+}
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -24,7 +31,7 @@
             @Html.DisplayFor(model => model.Crop.CropId)
         </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="VarietyId" />
         <input type="submit" value="Delete" class="btn btn-default" /> |

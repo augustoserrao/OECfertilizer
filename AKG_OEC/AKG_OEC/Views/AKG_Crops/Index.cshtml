@@ -25,7 +25,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                <a asp-controller="AKG_Varieties" asp-action="Index" asp-route-id="@item.CropId" asp-route-name="@item.Name">@Html.DisplayFor(modelItem => item.Name)</a>
+                <a asp-controller="AKG_Varieties" asp-action="Index" asp-route-cropId="@item.CropId" asp-route-cropName="@item.Name">@Html.DisplayFor(modelItem => item.Name)</a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Image)

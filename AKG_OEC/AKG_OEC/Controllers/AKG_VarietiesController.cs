@@ -18,11 +18,41 @@ namespace AKG_OEC.Controllers
             _context = context;
         }
 
+        private void ResetCookies()
+        {
+            Response.Cookies.Delete("cropId_Variety");
+            Response.Cookies.Delete("cropName_Variety");
+        }
+
         // GET: AKG_Varieties
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? cropId, string cropName)
         {
             var oECContext = _context.Variety.Include(v => v.Crop);
-            return View(await oECContext.ToListAsync());
+            var varieties = await oECContext.ToListAsync();
+
+            if (cropId != null)
+            {
+                ResetCookies();
+                Response.Cookies.Append("cropId_Variety", cropId.ToString());
+
+                if (cropName == null || cropName == "")
+                    cropName = (await _context.Crop.SingleOrDefaultAsync(p => p.CropId == cropId)).Name;
+
+                Response.Cookies.Append("cropName_Variety", cropName);
+                ViewBag.cropName = cropName;
+                
+                return View(varieties.Where(p => p.CropId == cropId).OrderBy(p => p.Name));
+            }
+            else if (Request.Cookies["cropId_Variety"] != null)
+            {
+                ViewBag.cropName = Request.Cookies["cropName_Variety"];
+
+                return View(varieties.Where(p => p.CropId == Convert.ToInt32(Request.Cookies["cropId"])).OrderBy(p => p.Name));
+            }
+
+            TempData["message"] = "Select a Crop to see its Varieties";
+            
+            return RedirectToAction("Index", "AKG_Crops");
         }
 
         // GET: AKG_Varieties/Details/5
@@ -47,6 +77,8 @@ namespace AKG_OEC.Controllers
         // GET: AKG_Varieties/Create
         public IActionResult Create()
         {
+            ViewBag.cropName = Request.Cookies["cropName_Variety"];
+
             ViewData["CropId"] = new SelectList(_context.Crop, "CropId", "CropId");
             return View();
         }
@@ -60,6 +92,7 @@ namespace AKG_OEC.Controllers
         {
             if (ModelState.IsValid)
             {
+                variety.CropId = Convert.ToInt32(Request.Cookies["cropId_Variety"]);
                 _context.Add(variety);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -81,6 +114,9 @@ namespace AKG_OEC.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.cropName = Request.Cookies["cropName_Variety"];
+
             ViewData["CropId"] = new SelectList(_context.Crop, "CropId", "CropId", variety.CropId);
             return View(variety);
         }
@@ -137,6 +173,8 @@ namespace AKG_OEC.Controllers
                 return NotFound();
             }
 
+            ViewBag.cropName = Request.Cookies["cropName_Variety"];
+
             return View(variety);
         }
 
@@ -145,6 +183,29 @@ namespace AKG_OEC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Deleting from other tables because of foreign key constraints
+            var plots = _context.Plot.Where(m => m.VarietyId == id)
+                                          .Select(m => new { m.PlotId });
+
+            foreach (var plot in plots)
+            {
+                var treatments = _context.Treatment.Where(m => m.PlotId == id)
+                                              .Select(m => new { m.TreatmentId });
+
+                foreach (var treatment in treatments)
+                {
+                    var treatmentFertilizers = _context.TreatmentFertilizer.Where(m => m.TreatmentId == treatment.TreatmentId)
+                                              .Select(m => new { m.TreatmentFertilizerId });
+
+                    foreach (var fertilizer in treatmentFertilizers)
+                        _context.TreatmentFertilizer.Remove(await _context.TreatmentFertilizer.SingleOrDefaultAsync(m => m.TreatmentFertilizerId == fertilizer.TreatmentFertilizerId));
+
+                    _context.Treatment.Remove(await _context.Treatment.SingleOrDefaultAsync(m => m.TreatmentId == treatment.TreatmentId));
+                }
+
+                _context.Plot.Remove(await _context.Plot.SingleOrDefaultAsync(m => m.PlotId == plot.PlotId));
+            }
+
             var variety = await _context.Variety.SingleOrDefaultAsync(m => m.VarietyId == id);
             _context.Variety.Remove(variety);
             await _context.SaveChangesAsync();
