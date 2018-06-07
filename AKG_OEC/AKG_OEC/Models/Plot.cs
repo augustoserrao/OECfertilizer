@@ -32,7 +32,7 @@ namespace AKG_OEC.Models
         public float? PercentBaseSaturationCa { get; set; }
         public float? PercentBaseSaturationH { get; set; }
         public string Comments { get; set; }
-
+        
         public Farm Farm { get; set; }
         public Variety Variety { get; set; }
         public ICollection<Treatment> Treatment { get; set; }

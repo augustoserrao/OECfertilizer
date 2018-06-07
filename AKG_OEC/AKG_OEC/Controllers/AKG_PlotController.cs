@@ -18,11 +18,150 @@ namespace AKG_OEC.Controllers
             _context = context;
         }
 
-        // GET: AKG_Plot
-        public async Task<IActionResult> Index()
+        private void ResetCookies()
         {
-            var oECContext = _context.Plot.Include(p => p.Farm).Include(p => p.Variety);
-            return View(await oECContext.ToListAsync());
+            Response.Cookies.Delete("cropId");
+            Response.Cookies.Delete("varietyId");
+            Response.Cookies.Delete("cropName");
+            Response.Cookies.Delete("varietyName");
+        }
+
+        // GET: AKG_Plot
+        public async Task<IActionResult> Index(int? cropId, string cropName, int? varietyId, string varietyName, int? showAll)
+        {
+            var oECContext = _context.Plot.Include(p => p.Farm).Include(p => p.Variety).Include(p => p.Treatment).Include(p => p.Variety.Crop);
+            var plots = (await oECContext.ToListAsync()).OrderByDescending(p => p.DatePlanted);
+
+            if (cropId != null)
+            {
+                ResetCookies();
+                Response.Cookies.Append("cropId", cropId.ToString());
+                Response.Cookies.Append("cropName", cropName);
+                ViewBag.cropName = cropName;
+
+                foreach (var plot in plots)
+                {
+                    if (plot.Variety == null)
+                        plot.Variety = new Variety() { };
+                }
+
+                return View(plots.Where(p => p.Variety.CropId == cropId));
+            }
+            else if (varietyId != null)
+            {
+                ResetCookies();
+                Response.Cookies.Append("varietyId", cropId.ToString());
+                Response.Cookies.Append("varietyName", varietyName);
+                ViewBag.varietyName = varietyName;
+
+                return View(plots.Where(p => p.VarietyId == varietyId));
+            }
+            else if (showAll != null)
+            {
+                ResetCookies();
+            }
+            else if (Request.Cookies["cropId"] != null)
+            {
+                foreach (var plot in plots)
+                {
+                    if (plot.Variety == null)
+                        plot.Variety = new Variety() { };
+                }
+
+                ViewBag.cropName = Request.Cookies["cropName"];
+
+                return View(plots.Where(p => p.Variety.CropId == Convert.ToInt32(Request.Cookies["cropId"])));
+            }
+            else if (Request.Cookies["varietyId"] != null)
+            {
+                ViewBag.varietyName = Request.Cookies["varietyName"];
+                return View(plots.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])));
+            }
+
+            return View(plots);
+        }
+
+        // GET: AKG_Plot order by farm
+        public async Task<IActionResult> IndexOrderFarm()
+        {
+            var oECContext = _context.Plot.Include(p => p.Farm).Include(p => p.Variety).Include(p => p.Treatment).Include(p => p.Variety.Crop);
+            var plots = (await oECContext.ToListAsync()).OrderBy(p => p.Farm.Name);
+
+            if (Request.Cookies["cropId"] != null)
+            {
+                foreach (var plot in plots)
+                {
+                    if (plot.Variety == null)
+                        plot.Variety = new Variety() { };
+                }
+
+                ViewBag.cropName = Request.Cookies["cropName"];
+
+                return View("Index", plots.Where(p => p.Variety.CropId == Convert.ToInt32(Request.Cookies["cropId"])));
+            }
+            else if (Request.Cookies["varietyId"] != null)
+            {
+                ViewBag.varietyName = Request.Cookies["varietyName"];
+                return View("Index", plots.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])));
+            }
+            
+            return View("Index", plots);
+        }
+
+        // GET: AKG_Plot order by variety
+        public async Task<IActionResult> IndexOrderVariety()
+        {
+            var oECContext = _context.Plot.Include(p => p.Farm).Include(p => p.Variety).Include(p => p.Treatment).Include(p => p.Variety.Crop);
+            var plots = (await oECContext.ToListAsync());
+
+            foreach (var plot in plots)
+            {
+                if (plot.Variety == null)
+                    plot.Variety = new Variety() { Name = "" };
+            }
+
+            var ret = plots.OrderBy(p => p.Variety.Name);
+
+            if (Request.Cookies["cropId"] != null)
+            {
+                ViewBag.cropName = Request.Cookies["cropName"];
+
+                return View("Index", ret.Where(p => p.Variety.CropId == Convert.ToInt32(Request.Cookies["cropId"])));
+            }
+            else if (Request.Cookies["varietyId"] != null)
+            {
+                ViewBag.varietyName = Request.Cookies["varietyName"];
+                return View("Index", ret.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])));
+            }
+            
+            return View("Index", ret);
+        }
+
+        // GET: AKG_Plot order by CEC
+        public async Task<IActionResult> IndexOrderCec()
+        {
+            var oECContext = _context.Plot.Include(p => p.Farm).Include(p => p.Variety).Include(p => p.Treatment).Include(p => p.Variety.Crop);
+            var plots = (await oECContext.ToListAsync()).OrderBy(p => p.Cec);
+
+            if (Request.Cookies["cropId"] != null)
+            {
+                foreach (var plot in plots)
+                {
+                    if (plot.Variety == null)
+                        plot.Variety = new Variety() { };
+                }
+
+                ViewBag.cropName = Request.Cookies["cropName"];
+
+                return View("Index", plots.Where(p => p.Variety.CropId == Convert.ToInt32(Request.Cookies["cropId"])));
+            }
+            else if (Request.Cookies["varietyId"] != null)
+            {
+                ViewBag.varietyName = Request.Cookies["varietyName"];
+                return View("Index", plots.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])));
+            }
+
+            return View("Index", plots);
         }
 
         // GET: AKG_Plot/Details/5
@@ -48,8 +187,21 @@ namespace AKG_OEC.Controllers
         // GET: AKG_Plot/Create
         public IActionResult Create()
         {
-            ViewData["FarmId"] = new SelectList(_context.Farm, "FarmId", "ProvinceCode");
-            ViewData["VarietyId"] = new SelectList(_context.Variety, "VarietyId", "VarietyId");
+            ViewData["FarmId"] = new SelectList(_context.Farm.OrderBy(p => p.Name), "FarmId", "Name");
+
+            if (Request.Cookies["cropId"] != null)
+            {
+                ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.CropId == Convert.ToInt32(Request.Cookies["cropId"])).OrderBy(p => p.Name), "VarietyId", "Name");
+            }
+            else if (Request.Cookies["varietyId"] != null)
+            {
+                ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])).OrderBy(p => p.Name), "VarietyId", "Name");
+            }
+            else
+            {
+                ViewData["VarietyId"] = new SelectList(_context.Variety.OrderBy(p => p.Name), "VarietyId", "Name");
+            }
+
             return View();
         }
 
@@ -84,8 +236,22 @@ namespace AKG_OEC.Controllers
             {
                 return NotFound();
             }
-            ViewData["FarmId"] = new SelectList(_context.Farm, "FarmId", "ProvinceCode", plot.FarmId);
-            ViewData["VarietyId"] = new SelectList(_context.Variety, "VarietyId", "VarietyId", plot.VarietyId);
+
+            ViewData["FarmId"] = new SelectList(_context.Farm.OrderBy(p => p.Name), "FarmId", "Name", plot.FarmId);
+
+            if (Request.Cookies["cropId"] != null)
+            {
+                ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.CropId == Convert.ToInt32(Request.Cookies["cropId"])).OrderBy(p => p.Name), "VarietyId", "Name", plot.VarietyId);
+            }
+            else if (Request.Cookies["varietyId"] != null)
+            {
+                ViewData["VarietyId"] = new SelectList(_context.Variety.Where(p => p.VarietyId == Convert.ToInt32(Request.Cookies["varietyId"])).OrderBy(p => p.Name), "VarietyId", "Name", plot.VarietyId);
+            }
+            else
+            {
+                ViewData["VarietyId"] = new SelectList(_context.Variety.OrderBy(p => p.Name), "VarietyId", "Name", plot.VarietyId);
+            }
+            
             return View(plot);
         }
 
@@ -151,6 +317,21 @@ namespace AKG_OEC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Deleting from Variety table because of foreign key constraints
+            var treatments = _context.Treatment.Where(m => m.PlotId == id)
+                                          .Select(m => new { m.TreatmentId });
+
+            foreach (var treatment in treatments)
+            {
+                var treatmentFertilizers = _context.TreatmentFertilizer.Where(m => m.TreatmentId == treatment.TreatmentId)
+                                          .Select(m => new { m.TreatmentFertilizerId });
+
+                foreach (var fertilizer in treatmentFertilizers)
+                    _context.TreatmentFertilizer.Remove(await _context.TreatmentFertilizer.SingleOrDefaultAsync(m => m.TreatmentFertilizerId == fertilizer.TreatmentFertilizerId));
+
+                _context.Treatment.Remove(await _context.Treatment.SingleOrDefaultAsync(m => m.TreatmentId == treatment.TreatmentId));
+            }
+
             var plot = await _context.Plot.SingleOrDefaultAsync(m => m.PlotId == id);
             _context.Plot.Remove(plot);
             await _context.SaveChangesAsync();

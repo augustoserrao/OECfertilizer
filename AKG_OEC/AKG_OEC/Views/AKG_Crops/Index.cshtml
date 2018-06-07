@@ -36,7 +36,7 @@
                 <a asp-action="Delete" asp-route-id="@item.CropId">Delete</a>
             </td>
             <td>
-                <a asp-controller="AKG_Plot" asp-action="Index" asp-route-id="@item.CropId" asp-route-name="@item.Name">Show Plots</a>
+                <a asp-controller="AKG_Plot" asp-action="Index" asp-route-cropId="@item.CropId" asp-route-cropName="@item.Name">Show Plots</a>
             </td>
         </tr>
 }
