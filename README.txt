@@ -1,1 +1,2 @@
 - Assignment 1 submitted on May 24th
+- Assignment 2 submitted on June 8th
