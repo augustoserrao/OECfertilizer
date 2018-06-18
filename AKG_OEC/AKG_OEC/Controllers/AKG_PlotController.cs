@@ -24,15 +24,23 @@ namespace AKG_OEC.Controllers
             Response.Cookies.Delete("varietyId");
             Response.Cookies.Delete("cropName");
             Response.Cookies.Delete("varietyName");
+            Response.Cookies.Delete("plotId");
         }
 
         // GET: AKG_Plot
-        public async Task<IActionResult> Index(int? cropId, string cropName, int? varietyId, string varietyName, int? showAll)
+        public async Task<IActionResult> Index(int? cropId, string cropName, int? varietyId, string varietyName, int? plotId, int? showAll)
         {
             var oECContext = _context.Plot.Include(p => p.Farm).Include(p => p.Variety).Include(p => p.Treatment).Include(p => p.Variety.Crop);
             var plots = (await oECContext.ToListAsync()).OrderByDescending(p => p.DatePlanted);
 
-            if (cropId != null)
+            if (plotId != null)
+            {
+                ResetCookies();
+                Response.Cookies.Append("plotId", plotId.ToString());
+
+                return View(plots.Where(p => p.PlotId == plotId));
+            }
+            else if (cropId != null)
             {
                 ResetCookies();
                 Response.Cookies.Append("cropId", cropId.ToString());
@@ -59,6 +67,10 @@ namespace AKG_OEC.Controllers
             else if (showAll != null)
             {
                 ResetCookies();
+            }
+            else if (Request.Cookies["plotId"] != null)
+            {
+                return View(plots.Where(p => p.PlotId == Convert.ToInt32(Request.Cookies["plotId"])));
             }
             else if (Request.Cookies["cropId"] != null)
             {

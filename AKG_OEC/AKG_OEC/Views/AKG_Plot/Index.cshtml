@@ -47,35 +47,38 @@ else
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Farm.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Variety.Crop.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Variety.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DatePlanted)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Cec)
-                </td>
-                <td>
-                    @foreach (var treatment in item.Treatment)
-                    {
-                        @Html.DisplayFor(modelItem => treatment.Name)
-                        <br>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.PlotId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.PlotId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.PlotId">Delete</a>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Farm.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Variety.Crop.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Variety.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DatePlanted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cec)
+            </td>
+            <td>
+                @foreach (var treatment in item.Treatment)
+                {
+                    @Html.DisplayFor(modelItem => treatment.Name)
+                    <br>
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PlotId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.PlotId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.PlotId">Delete</a>
+            </td>
+            <td>
+                <a asp-controller="AKG_Treatments" asp-action="Index" asp-route-plotId="@item.PlotId" asp-route-farmName="@item.Farm.Name">Manage Treatments</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
