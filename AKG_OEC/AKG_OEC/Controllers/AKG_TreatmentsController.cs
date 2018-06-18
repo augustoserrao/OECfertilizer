@@ -38,39 +38,6 @@ namespace AKG_OEC.Controllers
             else if (Request.Cookies["plotId"] != null)
             {
                 curPlotId = Convert.ToInt32(Request.Cookies["plotId"]);
-
-                foreach (var treatment in treatments.Where(p => p.PlotId == curPlotId))
-                {
-                    var treatmentFertilizers = _context.TreatmentFertilizer.Where(p => p.TreatmentId == treatment.TreatmentId);
-
-                    if (treatmentFertilizers.Count() == 0 && treatment.Name != NO_FERTILIZER)
-                    {
-                        treatment.Name = NO_FERTILIZER;
-                        await Edit(treatment.TreatmentId, treatment);
-                    }
-                    else
-                    {
-                        string newName = "";
-                        foreach (TreatmentFertilizer treatmentFertilizer in treatmentFertilizers)
-                        {
-                            newName += treatmentFertilizer.FertilizerName;
-
-                            if (treatmentFertilizer != treatmentFertilizers.Last())
-                            {
-                                newName += " + ";
-                            }
-                        }
-
-                        if (newName == "")
-                            newName = NO_FERTILIZER;
-
-                        if (treatment.Name != newName)
-                        {
-                            treatment.Name = newName;
-                            await Edit(treatment.TreatmentId, treatment);
-                        }
-                    }
-                }
             }
             else
             {
@@ -95,6 +62,39 @@ namespace AKG_OEC.Controllers
             else
             {
                 ViewBag.farmName = Request.Cookies["farmName"];
+            }
+
+            foreach (var treatment in treatments.Where(p => p.PlotId == curPlotId))
+            {
+                var treatmentFertilizers = _context.TreatmentFertilizer.Where(p => p.TreatmentId == treatment.TreatmentId);
+
+                if (treatmentFertilizers.Count() == 0 && treatment.Name != NO_FERTILIZER)
+                {
+                    treatment.Name = NO_FERTILIZER;
+                    await Edit(treatment.TreatmentId, treatment);
+                }
+                else
+                {
+                    string newName = "";
+                    foreach (TreatmentFertilizer treatmentFertilizer in treatmentFertilizers)
+                    {
+                        newName += treatmentFertilizer.FertilizerName;
+
+                        if (treatmentFertilizer != treatmentFertilizers.Last())
+                        {
+                            newName += " + ";
+                        }
+                    }
+
+                    if (newName == "")
+                        newName = NO_FERTILIZER;
+
+                    if (treatment.Name != newName)
+                    {
+                        treatment.Name = newName;
+                        await Edit(treatment.TreatmentId, treatment);
+                    }
+                }
             }
 
             ViewBag.plotId = curPlotId;
